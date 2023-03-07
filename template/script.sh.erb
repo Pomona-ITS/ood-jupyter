@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+source /etc/profile.d/hpc_software.sh
 # Benchmark info
 echo "TIMING - Starting main script at: $(date)"
 
@@ -26,4 +26,4 @@ echo "TIMING - Starting jupyter at: $(date)"
 
 # Launch the Jupyter Notebook Server
 set -x
-/opt/linux/rocky/8/software/jupyter/<%= context.pom_jupyter_version %>/bin/jupyter lab --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+$HPC_SOFTWARE/jupyter/<%= context.pom_jupyter_version %>/bin/jupyter lab --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
