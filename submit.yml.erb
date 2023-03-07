@@ -1,15 +1,5 @@
-# Job submission configuration file
-#
 ---
-
-#
-# Configure the content of the job script for the batch job here
-# @see http://www.rubydoc.info/gems/ood_core/OodCore/BatchConnect/Template
-#
 batch_connect:
-  # We use the basic web server template for generating the job script
-  #
-  # @note Do not change this unless you know what you are doing!
   template: "basic"
 
   # You can override the command used to query the hostname of the compute node
@@ -24,8 +14,14 @@ batch_connect:
 # Configure the job script submission parameters for the batch job here
 # @see http://www.rubydoc.info/gems/ood_core/OodCore/Job/Script
 #
-#script:
-#  queue_name: "queue1"
-#  accounting_id: "account1"
-#  email_on_started: true
-#  native: # ... array of command line arguments ...
+script:
+  queue_name: "<%= pom_partitions %>"
+  native:
+    - "--nodes=1"
+    <%- unless pom_num_gpus.blank? or pom_num_gpus.to_i == 0 -%>
+    - "--gres=gpu:<%= pom_num_gpus %>"
+    <%- end -%>
+    - "--time"
+    - "0-<%= pom_num_hours %>"
+    - "--cpus-per-task=<%= pom_num_cores %>"
+    - "--mem=<%= pom_num_memories %>G"

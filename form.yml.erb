@@ -1,0 +1,93 @@
+<%-
+  cmd = "source /etc/profile.d/hpc_software.sh; ls $HPC_SOFTWARE/jupyter/"
+  begin
+    output, status = Open3.capture2e(cmd)
+    if status.success?
+      jupyter_versions = output.split("\n").map(&:strip).reject(&:blank?).sort
+    else
+      raise output
+    end
+  rescue => e
+    jupyter_versions = []
+    error = e.message.strip
+  end
+-%>
+---
+cluster: "pomona"
+attributes:
+  modules: ""
+  extra_jupyter_args: ""
+  pom_partitions:
+    help: |
+      - **amd** - Default partition, you can run up to 720 hours (30 days) per job
+      - **gpu** - GPU partition, you can run up to 720 hours (30 days) per job
+      - **short** - Limit to 2 hours, job will start with little to no wait time
+    widget: select
+    options:
+      - [
+          'amd', 'amd',
+          data-hide-pom-num-gpus: true,
+          data-min-pom-num-hours: 1,
+          data-max-pom-num-hours: 720
+        ]
+      - [
+          'gpu', 'gpu',
+          data-min-pom-num-hours: 1,
+          data-max-pom-num-hours: 720
+        ]
+      - [
+          'short', 'short',
+          data-hide-pom-num-gpus: true,
+          data-min-pom-num-hours: 1,
+          data-max-pom-num-hours: 2
+        ]
+  pom_num_hours:
+    widget: "number_field"
+    label: "Number of hours"
+    help: |
+      - **short** - max of 2 hours
+    value: 1
+    min: 1
+    max: 720
+    required: true
+  pom_jupyter_version:
+    required: true
+    widget: select
+    options:
+    <%- jupyter_versions.each do |q| -%>
+      - [ "<%= q %>", "<%= q %>" ]
+    <%- end -%>
+  pom_num_gpus:
+    label: "Number of GPUs"
+    widget: "number_field"
+    help: |
+      Leave it at 0 if you are not using GPU partition
+    value: 0
+    max: "2"
+    min: "0"
+  pom_num_cores:
+    widget: "number_field"
+    label: "Number of CPU cores to request"
+    help: |
+      CPU cores are in multiple of 2 to optimize performance
+    value: 2
+    max: 128
+    min: 2
+    step: 2
+    required: true
+  pom_num_memories:
+    widget: "number_field"
+    label: "Memory in G to request"
+    value: 1
+    max: 500
+    min: 1
+form:
+  - modules
+  - extra_jupyter_args
+  - pom_partitions
+  - pom_num_hours
+  - pom_jupyter_version
+  - pom_num_gpus
+  - pom_num_cores
+  - pom_num_memories
+  - bc_email_on_started
