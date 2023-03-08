@@ -7,8 +7,7 @@ This Batch Connect app requires the following software be installed on the
 **compute nodes** that the batch job is intended to run on (**NOT** the
 OnDemand node):
 
-- [Jupyter](http://jupyter.readthedocs.io/en/latest/) (earlier
-  versions are untested but may work for you)
+- [Jupyter](http://jupyter.readthedocs.io/en/latest/)
 
   This setup was installed using 
 
