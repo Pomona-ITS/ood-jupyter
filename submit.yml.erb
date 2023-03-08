@@ -25,3 +25,7 @@ script:
     - "0-<%= pom_num_hours %>"
     - "--cpus-per-task=<%= pom_num_cores %>"
     - "--mem=<%= pom_num_memories %>G"
+    <%- unless bc_email_on_started.to_i == 0 -%>
+    - "--mail-type=BEGIN"
+    - "--mail-user=<%= ENV['USER'] %>@pomona.edu"
+    <%- end -%>

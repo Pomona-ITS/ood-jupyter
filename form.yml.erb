@@ -14,6 +14,7 @@
 -%>
 ---
 cluster: "pomona"
+cacheable: false
 attributes:
   modules: ""
   extra_jupyter_args: ""
@@ -27,18 +28,15 @@ attributes:
       - [
           'amd', 'amd',
           data-hide-pom-num-gpus: true,
-          data-min-pom-num-hours: 1,
           data-max-pom-num-hours: 720
         ]
       - [
           'gpu', 'gpu',
-          data-min-pom-num-hours: 1,
           data-max-pom-num-hours: 720
         ]
       - [
           'short', 'short',
           data-hide-pom-num-gpus: true,
-          data-min-pom-num-hours: 1,
           data-max-pom-num-hours: 2
         ]
   pom_num_hours:
@@ -51,17 +49,23 @@ attributes:
     max: 720
     required: true
   pom_jupyter_version:
+    label: "Jupyter Version"
     required: true
     widget: select
     options:
     <%- jupyter_versions.each do |q| -%>
       - [ "<%= q %>", "<%= q %>" ]
     <%- end -%>
+  pom_jupyter_type:
+    label: "Jupyter Type"
+    required: true
+    widget: select
+    options:
+      - lab
+      - notebook
   pom_num_gpus:
     label: "Number of GPUs"
     widget: "number_field"
-    help: |
-      Leave it at 0 if you are not using GPU partition
     value: 0
     max: "2"
     min: "0"
@@ -87,6 +91,7 @@ form:
   - pom_partitions
   - pom_num_hours
   - pom_jupyter_version
+  - pom_jupyter_type
   - pom_num_gpus
   - pom_num_cores
   - pom_num_memories
