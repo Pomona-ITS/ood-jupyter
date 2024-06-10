@@ -1,12 +1,16 @@
 ---
 batch_connect:
-  template: "basic"
+  template: vnc
 script:
   queue_name: "<%= pom_partitions %>"
   native:
     - "--nodes=1"
     <%- unless pom_num_gpus.blank? or pom_num_gpus.to_i == 0 -%>
+    <%- if pom_gpu_type == "any" -%>
     - "--gres=gpu:<%= pom_num_gpus %>"
+    <%- else -%>
+    - "--gres=gpu:<%= pom_gpu_type %>:<%= pom_num_gpus %>"
+    <%- end -%>
     <%- end -%>
     - "--time"
     - "0-<%= pom_num_hours %>"

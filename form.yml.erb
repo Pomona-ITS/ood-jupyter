@@ -12,6 +12,20 @@
     error = e.message.strip
   end
 -%>
+<%-
+  cmd = "sinfo -o %G | cut -d':' -f2 | grep -v null |grep -v GRES"
+  begin
+    output, status = Open3.capture2e(cmd)
+    if status.success?
+      gpu_type = output.split("\n").map(&:strip).reject(&:blank?).reverse
+    else
+      raise output
+    end
+  rescue => e
+    gpu_type = []
+    error = e.message.strip
+  end
+-%>
 ---
 cluster: "pomona"
 cacheable: false
@@ -28,15 +42,19 @@ attributes:
       - [
           'amd', 'amd',
           data-hide-pom-num-gpus: true,
+          data-hide-pom-gpu-type: true,
           data-max-pom-num-hours: 720
         ]
       - [
           'gpu', 'gpu',
-          data-max-pom-num-hours: 720
+          data-max-pom-num-hours: 720,
+          data-max-pom-num-cores: 32,
+          data-max-pom-num-memories: 125
         ]
       - [
           'short', 'short',
           data-hide-pom-num-gpus: true,
+          data-hide-pom-gpu-type: true,
           data-max-pom-num-hours: 2
         ]
   pom_num_hours:
@@ -67,8 +85,16 @@ attributes:
     label: "Number of GPUs"
     widget: "number_field"
     value: 0
-    max: "2"
+    max: "1"
     min: "0"
+  pom_gpu_type:
+    label: "GPU type"
+    widget: select
+    options:
+      - any
+    <%- gpu_type.each do |q| -%>
+      - [ "<%= q %>", "<%= q %>" ]
+    <%- end -%>
   pom_num_cores:
     widget: "number_field"
     label: "Number of CPU cores to request"
@@ -93,6 +119,7 @@ form:
   - pom_jupyter_version
   - pom_jupyter_type
   - pom_num_gpus
+  - pom_gpu_type
   - pom_num_cores
   - pom_num_memories
   - bc_email_on_started
